@@ -1,5 +1,6 @@
 import Groq from "groq-sdk";
 require("dotenv").config();
+import { AppError } from "../middleware/errorHandler.ts";
 
 import { Request, Response, NextFunction } from "express";
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -18,7 +19,7 @@ const getGroqChatCompletion = async (topic?: string) => {
         "title": string,
         "content": string
       }
-        3. Maximum 6 news items
+        3. Maximum 8 news items
         4. Do not include any text before or after the JSON array
         5. Ensure all JSON syntax is complete and valid
         6. Always use double quotes for property names and string values
@@ -47,6 +48,7 @@ const getGroqChatCompletion = async (topic?: string) => {
   });
 };
 
+
 export const generateNews = async (
   req: Request,
   res: Response,
@@ -56,19 +58,16 @@ export const generateNews = async (
     const { topic } = req.body;
     const chatCompletion = await getGroqChatCompletion(topic);
     if (!chatCompletion.choices[0].message.content) {
-      throw new Error("We ran into a server error try again");
+      throw new AppError("We ran into a server error try again", 500);
     }
 
     const aiResponse = chatCompletion.choices[0]?.message?.content;
-    let parsedResponse;
-    try {
-      parsedResponse = JSON.parse(aiResponse);
-    } catch (jsonError) {
-      throw new Error("Failed to parse AI response");
+    const parsedResponse = JSON.parse(aiResponse);
+    if (!Array.isArray(parsedResponse)) {
+      throw new AppError("Invalid response from AI", 500);
     }
-
     res.status(201).json(parsedResponse);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 };
