@@ -4,7 +4,7 @@ import { CopilotKit } from "@copilotkit/react-core";
 
 const App = () => {
   return (
-    <CopilotKit runtimeUrl="http://localhost:3001/api/copilotkit">
+    <CopilotKit runtimeUrl="https://news-aggregator-production-a8fd.up.railway.app/api/copilotkit">
       <div className="flex h-screen font-montserrat justify-center bg-black ">
         <Router>
           <Routes>

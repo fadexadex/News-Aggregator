@@ -12,7 +12,7 @@ import "react-toastify/dist/ReactToastify.css"
 import { useCopilotReadable } from "@copilotkit/react-core"
 
 const fetchNews = async (topic: string): Promise<NewsItem[]> => {
-  const response = await fetch("http://localhost:3001/api/get-news", {
+  const response = await fetch("https://news-aggregator-production-a8fd.up.railway.app/api/get-news", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ topic }),
